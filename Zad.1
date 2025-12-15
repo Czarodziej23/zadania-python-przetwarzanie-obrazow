@@ -1,0 +1,19 @@
+import cv2
+import matplotlib.pyplot as plt
+
+image = cv2.imread("pomarancza.jpg")
+
+plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+plt.axis("off")
+plt.show()
+
+h, w = image.shape[:2]
+resized = cv2.resize(image, (w // 2, h // 2))
+gray = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY)
+rotated = cv2.rotate(gray, cv2.ROTATE_90_CLOCKWISE)
+
+plt.imshow(rotated, cmap="gray")
+plt.axis("off")
+plt.show()
+
+print(rotated)
