@@ -1,0 +1,54 @@
+import urllib.request
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+url = "https://picsum.photos/800"
+
+req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+data = urllib.request.urlopen(req).read()
+image = cv2.imdecode(np.frombuffer(data, np.uint8), cv2.IMREAD_COLOR)
+
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+plt.figure()
+plt.imshow(image_rgb)
+plt.axis("off")
+plt.show()
+
+colors = ("r", "g", "b")
+plt.figure()
+
+for i, col in enumerate(colors):
+    hist = cv2.calcHist([image], [i], None, [256], [0, 256])
+    plt.plot(hist, color=col)
+
+plt.title("Histogram kanałów RGB")
+plt.show()
+
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+hist_gray = cv2.calcHist([gray], [0], None, [256], [0, 256])
+
+plt.figure()
+plt.plot(hist_gray)
+plt.title("Histogram obrazu w skali szarości")
+plt.show()
+
+mean_intensity = np.mean(gray)
+std_intensity = np.std(gray)
+min_intensity = np.min(gray)
+max_intensity = np.max(gray)
+
+quality = "średnia"
+
+if std_intensity < 30:
+    quality = "niska (mały kontrast)"
+elif min_intensity < 10 and max_intensity > 245:
+    quality = "średnia (możliwe prześwietlenie/niedoświetlenie)"
+elif std_intensity > 50 and min_intensity > 5 and max_intensity < 250:
+    quality = "wysoka"
+
+print("Średnia jasność:", mean_intensity)
+print("Odchylenie standardowe (kontrast):", std_intensity)
+print("Zakres jasności:", min_intensity, "-", max_intensity)
+print("Oszacowana jakość obrazu:", quality)
